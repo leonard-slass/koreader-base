@@ -478,6 +478,22 @@ ifdef ANDROID
 endif
 
 
+# ===========================================================================
+# console version of MeCab
+$(OUTPUT_DIR)/mecab: $(THIRDPARTY_DIR)/mecab/*.*
+	install -d $(MECAB_BUILD_DIR)
+	cd $(MECAB_BUILD_DIR) && \
+		$(CMAKE) $(CMAKE_FLAGS) \
+		-DLIBICONV='$(LIBICONV)' \
+		-DLIBICONV_DIR='$(LIBICONV_DIR)' \
+		$(CURDIR)/$(THIRDPARTY_DIR)/mecab && \
+		$(CMAKE_MAKE_PROGRAM) $(CMAKE_MAKE_PROGRAM_FLAGS)
+	cp $(MECAB_DIR)/mecab $(OUTPUT_DIR)/
+ifdef ANDROID
+	readelf -d $@ | grep 'no dynamic' \
+		|| echo "warning: Android L+ support only PIE binary and can't run this"
+endif
+
 # ==========================================================================
 # SDL2
 $(SDL2_LIB): $(THIRDPARTY_DIR)/sdl2/*.*
